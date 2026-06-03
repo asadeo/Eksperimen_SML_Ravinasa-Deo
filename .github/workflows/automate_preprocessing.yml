@@ -1,0 +1,36 @@
+name: Automate Data Preprocessing
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
+
+jobs:
+  build-and-process:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn
+
+      - name: Run automation script
+        run: python preprocessing/automate_Ravinasa-Deo.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add dataset_raw/ preprocessing/data_siap_latih.csv
+          git commit -m "Auto-update processed dataset via GitHub Actions" || echo "No changes to commit"
+          git push
